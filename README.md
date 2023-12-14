@@ -20,7 +20,7 @@ This can be installed with:
 sudo apt install qbittorrent-nox
 ```
 
-If you want to be able to have the full qBittorrent experience, you can also install it alongside `qbittorrent-nox` with:
+If you want to be able to have the full qBittorrent experience, you can also install it alongside/instead of `qbittorrent-nox` with:
 
 ```shell
 sudo apt install qbittorrent
@@ -35,8 +35,27 @@ qbittorrent-nox
 qbittorrent-nox --webui-port=<port>
 ```
 
-More importantly, we can run it simply with a torrent file or magnet url.
-Hopefully I remember to write more about that later.
+You need to give the appropriate permissions to qBittorrent:
+
+```shell
+sudo useradd -r -m qbittorrent  # create a user called qbittorrent
+sudo usermod -a -G qbittorrent pi  # add the user pi to the qbittorrent user group
+```
+
+Finally, copy the `qbittorrent.service` file to `/etc/systemd/system/`:
+
+```shell
+sudo cp qbittorrent.service /etc/systemd/system/qbittorrent.service
+```
+
+and set it up to run on boot:
+
+```shell
+sudo systemctl enable qbittorrent
+```
+
+<!--More importantly, we can run it simply with a torrent file or magnet url.
+Hopefully I remember to write more about that later. -->
 
 ## Install Plex
 
@@ -70,6 +89,8 @@ You can add the following to your crontab (`crontab -e`):
 0 3 * * * $HOME/TorrentBox/clean_junk.py
 5 3 * * * $HOME/TorrentBox/remove_empty.sh
 10 3 * * * $HOME/TorrentBox/move_to_folders.sh
-# Start torrentbox on reboot
-@reboot $HOME/TorrentBox/torrentbox.sh 
 ```
+
+## Create Filesystem
+
+<!-- TODO add the set_up_drives.sh script -->
