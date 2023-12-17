@@ -83,4 +83,19 @@ You can add the following to your crontab (`crontab -e`):
 
 ## Create Filesystem
 
+Connect your storage device to the Raspberry Pi.
+If it auto-mounts, unmount it with `sudo umount /path/to/device`.
+
+Find your device with `lsblk -f`.
+Take note of the device name (`sd**`), the filesystem type (FSTYPE), and the UUID.
+The device name corresponds to a device at `/dev/sd**`.
+
+<!-- Change filesystem to ntfs -->
+
+In the `/etc/fstab` file, add the following, replacing `<uuid>` with your UUID:
+
+```
+UUID=<uuid> /mnt/mediadrv ntfs defaults,auto,users,rw,nofail,noatime 0 0
+```
+
 <!-- TODO add the set_up_drives.sh script -->
