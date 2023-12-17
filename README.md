@@ -35,23 +35,13 @@ qbittorrent-nox
 qbittorrent-nox --webui-port=<port>
 ```
 
-You need to give the appropriate permissions to qBittorrent:
+You can view the Web UI by accessing the IP address of the Raspberry Pi followed by the port number (default is 8080) in a web broswer.
+For example, `192.168.0.13:8080`.
 
-```shell
-sudo useradd -r -m qbittorrent  # create a user called qbittorrent
-sudo usermod -a -G qbittorrent pi  # add the user pi to the qbittorrent user group
+You can configure qBittorrent to launch on boot by adding the following to your crontab (edit crontab with `crontab -e`):
+
 ```
-
-Finally, copy the `qbittorrent.service` file to `/etc/systemd/system/`:
-
-```shell
-sudo cp qbittorrent.service /etc/systemd/system/qbittorrent.service
-```
-
-and set it up to run on boot:
-
-```shell
-sudo systemctl enable qbittorrent
+@reboot $HOME/TorrentBox/torrentbox.sh
 ```
 
 <!--More importantly, we can run it simply with a torrent file or magnet url.
