@@ -44,6 +44,14 @@ You can configure qBittorrent to launch on boot by adding the following to your 
 @reboot $HOME/TorrentBox/torrentbox.sh
 ```
 
+The file `qBittorrent.conf` can be copied to `~/.config/qBittorrent/qBittorrent.conf`.
+This contains some configuration settings that may be useful.
+More importantly, it sets up the TV and Movies categories and their installation directory.
+Without doing this, there would be no reason to set up the external drive.
+
+If you choose to do this in the web UI, simply right click under the "CATEGORIES" header in the sidebar and select "Add category...".
+You should create two categories, one called "TV" located at `/mnt/mediadrv/TV`, and one called "Movies" located at `/mnt/mediadrv/Movies`.
+
 <!--More importantly, we can run it simply with a torrent file or magnet url.
 Hopefully I remember to write more about that later. -->
 
