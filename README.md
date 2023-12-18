@@ -98,12 +98,27 @@ Find your device with `lsblk -f`.
 Take note of the device name (`sd**`), the filesystem type (FSTYPE), and the UUID.
 The device name corresponds to a device at `/dev/sd**`.
 
-<!-- Change filesystem to ntfs -->
+If the filesystem type *isn't* a format compatible with Linux, you should reformat the drive.
+I typically reformat to NTFS because it is compatible with Windows too.
+Make sure you back up the drive, because any data will be deleted.
 
+```shell
+# ONLY DO THIS IF YOUR DATA IS BACKED UP
+sudo mkfs -t ntfs /dev/sd**  # replace sd** with your device name
+```
+
+Next, you need to add the drive to your fstab, so it is treated as a permanent drive.
 In the `/etc/fstab` file, add the following, replacing `<uuid>` with your UUID:
 
 ```
 UUID=<uuid> /mnt/mediadrv ntfs defaults,auto,users,rw,nofail,noatime 0 0
+```
+
+Once that has been done, you should create the directories for your TV shows and movies:
+
+```shell
+mkdir -p /mnt/mediadrv/TV
+mkdir -p /mnt/mediadrv/Movies
 ```
 
 <!-- TODO add the set_up_drives.sh script -->
