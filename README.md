@@ -2,7 +2,7 @@
 
 ## Initial Setup
 
-Before starting, you need to set up a Raspberry following the instructions [here]().
+Before starting, you need to set up a Raspberry following the instructions [here](https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up/0).
 
 The next step is to update everything with:
 
@@ -51,25 +51,6 @@ Without doing this, there would be no reason to set up the external drive.
 
 If you choose to do this in the web UI, simply right click under the "CATEGORIES" header in the sidebar and select "Add category...".
 You should create two categories, one called "TV" located at `/mnt/mediadrv/TV`, and one called "Movies" located at `/mnt/mediadrv/Movies`.
-
-<!--More importantly, we can run it simply with a torrent file or magnet url.
-Hopefully I remember to write more about that later. -->
-
-## Install Plex
-
-Plex must first be added to your repositories:
-
-```shell
-echo deb https://downloads.plex.tv/repo/deb public main | sudo tee /etc/apt/sources.list.d/plexmediaserver.list
-curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
-sudo apt update
-```
-
-Then you can install Plex with:
-
-```shell
-sudo apt install plexmediaserver
-```
 
 ## Cron Jobs
 
@@ -122,3 +103,32 @@ mkdir -p /mnt/mediadrv/Movies
 ```
 
 <!-- TODO add the set_up_drives.sh script -->
+
+## Plex
+
+To add the Plex repository in Debian, run the following commands:
+
+```shell
+# All commands need sudo. Consider running `sudo -v` before pasting
+echo deb https://downloads.plex.tv/repo/deb public main | sudo tee /etc/apt/sources.list.d/plexmediaserver.list
+curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
+sudo apt update
+```
+
+After that, it can be installed with:
+
+```shell
+sudo apt install plexmediaserver
+```
+
+You can then launch Plex using:
+
+```shell
+sudo systemctl start plexmediaserver
+```
+
+and access it at `192.168.x.x:32400/web`.
+
+Once you're connected, follow [these instructions](https://support.plex.tv/articles/200288896-basic-setup-wizard/) to get set up.
+Make sure you use `/mnt/mediadrv/TV` for the TV show library, and `/mnt/mediadrv/Movies` for the movie library.
+
