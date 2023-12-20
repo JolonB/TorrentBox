@@ -1,10 +1,19 @@
 # TorrentBox Setup
 
+## Requirements
+
+* Raspberry Pi
+* SD Card
+* USB Storage Medium
+* Raspberry Pi power supply and cable
+* Ethernet cable (optional)
+
 ## Initial Setup
 
 Before starting, you need to set up a Raspberry following the instructions [here](https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up/0).
+If you plan on using Wi-Fi, it is a good idea to set the credentials when flashing the SD card, otherwise you will need to connect it to a keyboard and monitor.
 
-The next step is to update everything with:
+Once it is all set up and you have connected via SSH, the next step is to update everything with:
 
 ```shell
 sudo apt update
@@ -72,16 +81,59 @@ You can add the following to your crontab (`crontab -e`):
 
 ## Create Filesystem
 
-Connect your storage device to the Raspberry Pi.
-If it auto-mounts, unmount it with `sudo umount /path/to/device`.
+Add the following line to the end of your `/etc/fstab` file:
 
+```
+LABEL=MEDIA /mnt/mediadrv auto defaults,auto,users,rw,nofail,noatime 0 0
+```
+
+This simply mounts a drive called MEDIA to `/mnt/mediadrv`.
+
+In order to set up this drive, connect it to the Raspberry Pi or your PC.
+
+### Raspberry Pi
+
+To do this on the Raspberry Pi or another Linux device, first connect it to the computer.
+If it auto-mounts, unmount it with `sudo umount /path/to/device`.
 Find your device with `lsblk -f`.
-Take note of the device name (`sd**`), the filesystem type (FSTYPE), and the UUID.
-The device name corresponds to a device at `/dev/sd**`.
+Take note of the device name (probably `sd**`).
+
+Next, you can format it to whatever filesystem you prefer (this step is optional):
+
+```shell
+# WARNING: this will delete all files on the drive
+# NTFS
+sudo mkfs -t ntfs /dev/sd**
+# EXT4
+sudo mkfs -t ext4 /dev/sd**
+# EXFAT
+sudo mkfs -t exfat /dev/sd**
+# and so on...
+```
+
+Next, you need to label the drive so it can be automatically mounted.
+The command depends on what you formatted the drive as.
+
+```shell
+# NTFS
+sudo ntfslabel /dev/sd** MEDIA
+# EXT4
+sudo e2label /dev/sd** MEDIA
+# EXFAT
+sudo exfatlabel /dev/sd** MEDIA
+# and so on...
+```
+
+<!-- TODO make drive have chmod 777 -->
+
+### Windows
 
 If the filesystem type *isn't* a format compatible with Linux, you should reformat the drive.
 I typically reformat to NTFS because it is compatible with Windows too.
 Make sure you back up the drive, because any data will be deleted.
+
+Insert the USB drive, right click on it in File Explorer, and select "*Format*".
+<!-- TODO finish instructions and add images -->
 
 ```shell
 # ONLY DO THIS IF YOUR DATA IS BACKED UP
