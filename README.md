@@ -98,17 +98,16 @@ If it auto-mounts, unmount it with `sudo umount /path/to/device`.
 Find your device with `lsblk -f`.
 Take note of the device name (probably `sd**`).
 
-Next, you can format it to whatever filesystem you prefer (this step is optional):
+Next, you can format it to whatever filesystem you prefer, however, some can only be treated as removable drives, and cannot be mounted with the appropriate permissions.
+Both NTFS and EXT4 work, but there may be other options.
+If your drive is already one of these formats, you don't need to run this command:
 
 ```shell
 # WARNING: this will delete all files on the drive
 # NTFS
-sudo mkfs -t ntfs /dev/sd**
+sudo mkfs -t ntfs /dev/sd** -Q
 # EXT4
 sudo mkfs -t ext4 /dev/sd**
-# EXFAT
-sudo mkfs -t exfat /dev/sd**
-# and so on...
 ```
 
 Next, you need to label the drive so it can be automatically mounted.
@@ -119,25 +118,14 @@ The command depends on what you formatted the drive as.
 sudo ntfslabel /dev/sd** MEDIA
 # EXT4
 sudo e2label /dev/sd** MEDIA
-# EXFAT
-sudo exfatlabel /dev/sd** MEDIA
-# and so on...
 ```
 
-<!-- TODO make drive have chmod 777 -->
-
-### Windows
-
-If the filesystem type *isn't* a format compatible with Linux, you should reformat the drive.
-I typically reformat to NTFS because it is compatible with Windows too.
-Make sure you back up the drive, because any data will be deleted.
-
-Insert the USB drive, right click on it in File Explorer, and select "*Format*".
-<!-- TODO finish instructions and add images -->
+You may choose to set the appropriate permissions for the drive.
+This can be done by mounting to `/mnt/mediadrv` and running `chmod`:
 
 ```shell
-# ONLY DO THIS IF YOUR DATA IS BACKED UP
-sudo mkfs -t ntfs /dev/sd**  # replace sd** with your device name
+sudo mount -a  # This will mount the drive if your fstab is configured
+sudo chmod 777 /mnt/mediadrv -R
 ```
 
 Next, you need to add the drive to your fstab, so it is treated as a permanent drive.
@@ -149,12 +137,14 @@ UUID=<uuid> /mnt/mediadrv ntfs defaults,auto,users,rw,nofail,noatime 0 0
 
 Once that has been done, you should create the directories for your TV shows and movies:
 
-```shell
-mkdir -p /mnt/mediadrv/TV
-mkdir -p /mnt/mediadrv/Movies
-```
+### Windows
 
-<!-- TODO add the set_up_drives.sh script -->
+If the filesystem type *isn't* a format compatible with Linux, you should reformat the drive.
+I typically reformat to NTFS because it is compatible with Windows too.
+Make sure you back up the drive, because any data will be deleted.
+
+Insert the USB drive, right click on it in File Explorer, and select "*Format*".
+<!-- TODO finish instructions and add images -->
 
 ## Plex
 
