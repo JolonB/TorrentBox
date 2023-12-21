@@ -100,42 +100,32 @@ Take note of the device name (probably `sd**`).
 
 Next, you can format it to whatever filesystem you prefer, however, some can only be treated as removable drives, and cannot be mounted with the appropriate permissions.
 Both NTFS and EXT4 work, but there may be other options.
-If your drive is already one of these formats, you don't need to run this command:
+NTFS is best if you will ever plug the drive into a Windows device.
+
+#### NTFS
 
 ```shell
-# WARNING: this will delete all files on the drive
-# NTFS
-sudo mkfs -t ntfs /dev/sd** -Q
-# EXT4
-sudo mkfs -t ext4 /dev/sd**
+drive="/dev/sd**"  # replace this
+sudo mkfs -t ntfs $drive -Q  # This will delete all files on the drive
+sudo ntfslabel $drive MEDIA
 ```
 
-Next, you need to label the drive so it can be automatically mounted.
-The command depends on what you formatted the drive as.
+#### EXT4
 
 ```shell
-# NTFS
-sudo ntfslabel /dev/sd** MEDIA
-# EXT4
+drive="/dev/sd**"
+sudo mkfs -t ext4 $drive  # This will delete all files on the drive
 sudo e2label /dev/sd** MEDIA
 ```
 
-You may choose to set the appropriate permissions for the drive.
-This can be done by mounting to `/mnt/mediadrv` and running `chmod`:
-
-```shell
-sudo mount -a  # This will mount the drive if your fstab is configured
-sudo chmod 777 /mnt/mediadrv -R
-```
-
-Next, you need to add the drive to your fstab, so it is treated as a permanent drive.
-In the `/etc/fstab` file, add the following, replacing `<uuid>` with your UUID:
+You should next add the following to you **superuser** crontab.
+This can be accessed with `sudo crontab -e`.
 
 ```
-UUID=<uuid> /mnt/mediadrv ntfs defaults,auto,users,rw,nofail,noatime 0 0
+@reboot /home/pi/TorrentBox/set_up_drive.sh
 ```
 
-Once that has been done, you should create the directories for your TV shows and movies:
+This will automatically set the permissions for the drive, if it is mounted.
 
 ### Windows
 
