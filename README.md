@@ -20,6 +20,91 @@ sudo apt update
 sudo apt full-upgrade
 ```
 
+## Create Filesystem
+
+Add the following line to the end of your `/etc/fstab` file:
+
+```
+LABEL=MEDIA /mnt/mediadrv auto defaults,auto,users,rw,nofail,noatime 0 0
+```
+
+This simply mounts a drive called MEDIA to `/mnt/mediadrv`.
+
+In order to set up this drive, you can connect it to either the Raspberry Pi or your PC and do the following steps.
+
+### Connected to Raspberry Pi or Linux PC
+
+If the drive auto-mounts, unmount it with `sudo umount /path/to/device`.
+Find your device with `lsblk -f`.
+Take note of the device name (probably `sd**`).
+
+Next, you can format it to whatever filesystem you prefer, however, some can only be treated as removable drives.
+If it is an internal drive, it cannot be mounted with the appropriate permissions to download content to it.
+Both NTFS and EXT4 work, but there may be other options.
+NTFS is best if you will ever plug the drive into a Windows device.
+
+#### NTFS
+
+```shell
+drive="/dev/sd**"  # replace this
+sudo mkfs -t ntfs $drive -Q  # This will delete all files on the drive
+sudo ntfslabel $drive MEDIA
+```
+
+#### EXT4
+
+```shell
+drive="/dev/sd**"  # replace this
+sudo mkfs -t ext4 $drive  # This will delete all files on the drive
+sudo e2label /dev/sd** MEDIA
+```
+
+You should next add the following to you **superuser** crontab.
+This can be accessed with `sudo crontab -e`.
+
+```
+@reboot /home/pi/TorrentBox/set_up_drive.sh
+```
+
+This will automatically set the permissions for the drive, if it is mounted.
+
+### Connected to Windows PC
+
+Of the _internal_ filesystem formats that Linux supports, NTFS appears to be the only one that Windows also supports.
+Make sure you back up the drive, because any data will be deleted.
+
+Insert the USB drive, right click on it in File Explorer, and select "*Format*".
+Set the _File system_ to NTFS and the _Volume label_ to "MEDIA".
+Selecting _Quick Format_ will make the drive format faster, so it is a good idea to use it.
+Press _Start_ and wait for it to finish.
+
+![Format drive in Windows File Explorer](images/windows-format.png)
+
+If your drive is already formatted and you just want to change the name, you can right-click on it and select _Rename_.
+Change the name to "MEDIA"
+
+![Rename drive in Windows File Explorer](images/windows-rename.png)
+
+In both cases, eject the drive, plug it in to a powered-down Raspberry Pi, and then power on the Pi.
+
+## Cron Jobs
+
+There are a few scripts for being used in cron jobs (or being run manually).
+These are:
+
+* `clean_junk.py` - Cleans out any junk files (.txt, .nfo, etc.) included with the torrents.
+* `remove_empty.sh` - Remove empty directories to tidy up the filesystem.
+* `move_to_folders.sh` - Move files in the root media directories to a folder with a matching name.
+
+You can add the following to your crontab (`crontab -e`):
+
+```
+# Clean up files at night (3am, staggered by 5 minutes)
+0 3 * * * $HOME/TorrentBox/clean_junk.py
+5 3 * * * $HOME/TorrentBox/remove_empty.sh
+10 3 * * * $HOME/TorrentBox/move_to_folders.sh
+```
+
 ## Install qBittorrent
 
 We only need the headless version of qBittorrent.
@@ -40,14 +125,14 @@ You can start qBittorrent by running:
 ```shell
 # Default port (8080)
 qbittorrent-nox
-# Custom port
+# Or, with a custom port
 qbittorrent-nox --webui-port=<port>
 ```
 
 You can view the Web UI by accessing the IP address of the Raspberry Pi followed by the port number (default is 8080) in a web broswer.
 For example, `192.168.0.13:8080`.
 
-You can configure qBittorrent to launch on boot by adding the following to your crontab (edit crontab with `crontab -e`):
+You should configure qBittorrent to launch on boot by adding the following to your crontab (edit crontab with `crontab -e`):
 
 ```
 @reboot $HOME/TorrentBox/torrentbox.sh
@@ -56,85 +141,10 @@ You can configure qBittorrent to launch on boot by adding the following to your 
 The file `qBittorrent.conf` can be copied to `~/.config/qBittorrent/qBittorrent.conf`.
 This contains some configuration settings that may be useful.
 More importantly, it sets up the TV and Movies categories and their installation directory.
-Without doing this, there would be no reason to set up the external drive.
+Without doing this, everything would save to the SD card instead.
 
-If you choose to do this in the web UI, simply right click under the "CATEGORIES" header in the sidebar and select "Add category...".
+If you choose to do this in the web UI, rather than copying the configuration file, simply right click under the "CATEGORIES" header in the sidebar and select "Add category...".
 You should create two categories, one called "TV" located at `/mnt/mediadrv/TV`, and one called "Movies" located at `/mnt/mediadrv/Movies`.
-
-## Cron Jobs
-
-There are a few scripts for being used in cron jobs (or being run manually).
-These are:
-
-* `clean_junk.py` - Cleans out any junk files (.txt, .nfo, etc.) included with the torrents.
-* `remove_empty.sh` - Remove empty directories to tidy up the filesystem.
-* `move_to_folders.sh` - Move files in the root media directories to a folder with a matching name.
-
-You can add the following to your crontab (`crontab -e`):
-
-```
-# Clean up files at night (3am, staggered by 5 minutes)
-0 3 * * * $HOME/TorrentBox/clean_junk.py
-5 3 * * * $HOME/TorrentBox/remove_empty.sh
-10 3 * * * $HOME/TorrentBox/move_to_folders.sh
-```
-
-## Create Filesystem
-
-Add the following line to the end of your `/etc/fstab` file:
-
-```
-LABEL=MEDIA /mnt/mediadrv auto defaults,auto,users,rw,nofail,noatime 0 0
-```
-
-This simply mounts a drive called MEDIA to `/mnt/mediadrv`.
-
-In order to set up this drive, connect it to the Raspberry Pi or your PC.
-
-### Raspberry Pi
-
-To do this on the Raspberry Pi or another Linux device, first connect it to the computer.
-If it auto-mounts, unmount it with `sudo umount /path/to/device`.
-Find your device with `lsblk -f`.
-Take note of the device name (probably `sd**`).
-
-Next, you can format it to whatever filesystem you prefer, however, some can only be treated as removable drives, and cannot be mounted with the appropriate permissions.
-Both NTFS and EXT4 work, but there may be other options.
-NTFS is best if you will ever plug the drive into a Windows device.
-
-#### NTFS
-
-```shell
-drive="/dev/sd**"  # replace this
-sudo mkfs -t ntfs $drive -Q  # This will delete all files on the drive
-sudo ntfslabel $drive MEDIA
-```
-
-#### EXT4
-
-```shell
-drive="/dev/sd**"
-sudo mkfs -t ext4 $drive  # This will delete all files on the drive
-sudo e2label /dev/sd** MEDIA
-```
-
-You should next add the following to you **superuser** crontab.
-This can be accessed with `sudo crontab -e`.
-
-```
-@reboot /home/pi/TorrentBox/set_up_drive.sh
-```
-
-This will automatically set the permissions for the drive, if it is mounted.
-
-### Windows
-
-If the filesystem type *isn't* a format compatible with Linux, you should reformat the drive.
-I typically reformat to NTFS because it is compatible with Windows too.
-Make sure you back up the drive, because any data will be deleted.
-
-Insert the USB drive, right click on it in File Explorer, and select "*Format*".
-<!-- TODO finish instructions and add images -->
 
 ## Plex
 
