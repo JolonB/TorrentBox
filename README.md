@@ -73,10 +73,11 @@ You should next add the following to you **superuser** crontab.
 This can be accessed with `sudo crontab -e`.
 
 ```
-@reboot /home/pi/TorrentBox/set_up_drive.sh
+@reboot /home/pi/TorrentBox/scripts/set_up_drive.sh > /home/pi/TorrentBox/sudo_crontab.log 2>&1
 ```
 
 This will automatically set the permissions for the drive, if it is mounted.
+It will also log information for the latest reboot to `~/TorrentBox/sudo_crontab.log`.
 
 ### Connected to Windows PC
 
@@ -99,7 +100,7 @@ In both cases, eject the drive, plug it in to a powered-down Raspberry Pi, and t
 
 ## Cron Jobs
 
-There are a few scripts for being used in cron jobs (or being run manually).
+There are a few scripts for being used in cron jobs (or being run manually) in the `scripts/` directory.
 These are:
 
 * `clean_junk.py` - Cleans out any junk files (.txt, .nfo, etc.) included with the torrents.
@@ -110,9 +111,9 @@ You can add the following to your crontab (`crontab -e`):
 
 ```
 # Clean up files at night (3am, staggered by 5 minutes)
-0 3 * * * $HOME/TorrentBox/clean_junk.py
-5 3 * * * $HOME/TorrentBox/remove_empty.sh
-10 3 * * * $HOME/TorrentBox/move_to_folders.sh
+0 3 * * * $HOME/TorrentBox/scripts/clean_junk.py
+5 3 * * * $HOME/TorrentBox/scripts/remove_empty.sh
+10 3 * * * $HOME/TorrentBox/scripts/move_to_folders.sh
 ```
 
 ## Install qBittorrent
@@ -145,10 +146,10 @@ For example, `192.168.x.x:8080`.
 You should configure qBittorrent to launch on boot by adding the following to your crontab (edit crontab with `crontab -e`):
 
 ```
-@reboot $HOME/TorrentBox/torrentbox.sh
+@reboot $HOME/TorrentBox/scripts/torrentbox.sh
 ```
 
-The file `qBittorrent.conf` can be copied to `~/.config/qBittorrent/qBittorrent.conf`.
+The file `config/qBittorrent.conf` can be copied to `~/.config/qBittorrent/qBittorrent.conf`.
 This contains some configuration settings that may be useful.
 More importantly, it sets up the TV and Movies categories and their installation directory.
 Without doing this, everything would save to the SD card instead.
