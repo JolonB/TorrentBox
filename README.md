@@ -20,6 +20,16 @@ sudo apt update
 sudo apt full-upgrade
 ```
 
+## mDNS
+
+Raspberry Pis come with mDNS set up (if yours doesn't, [read here](https://archive.is/6HgJY)).
+If your Raspberry Pi is named "raspberrypi" (not the same as the user, which is "pi" by default), you can access the Raspberry Pi at `raspberrypi.local`.
+In any instances where these instructions mention going to an IP address, you can use `raspberrypi.local` instead.
+This means you don't need to set up a static IP address, because the address will be resolved to the Pi's IP address.
+
+I suggest renaming your device to something more meaningful, such as "media".
+This means you can access the qBittorrent and Plex servers at `media.local:8080` and `media.local:32400/web`.
+
 ## Create Filesystem
 
 Add the following line to the end of your `/etc/fstab` file:
@@ -81,7 +91,7 @@ Press _Start_ and wait for it to finish.
 ![Format drive in Windows File Explorer](images/windows-format.png)
 
 If your drive is already formatted and you just want to change the name, you can right-click on it and select _Rename_.
-Change the name to "MEDIA"
+Change the name to "MEDIA".
 
 ![Rename drive in Windows File Explorer](images/windows-rename.png)
 
@@ -130,7 +140,7 @@ qbittorrent-nox --webui-port=<port>
 ```
 
 You can view the Web UI by accessing the IP address of the Raspberry Pi followed by the port number (default is 8080) in a web broswer.
-For example, `192.168.0.13:8080`.
+For example, `192.168.x.x:8080`.
 
 You should configure qBittorrent to launch on boot by adding the following to your crontab (edit crontab with `crontab -e`):
 
