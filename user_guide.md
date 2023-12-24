@@ -40,6 +40,8 @@ Download Plex Desktop from your operating system's store, or from [this page](ht
 Once installed, create an account/sign in.
 Plex will automatically detect your server.
 
+<!-- TODO what about qbittorrent and plex config (web UIs) -->
+
 ## mDNS not working
 
 ## Changing Drive
@@ -68,6 +70,24 @@ Either only one or none of them will work.
 If you've changed your Wi-Fi SSID or password, you may need to update the credentials for the Raspberry Pi so it can reconnect.
 In general, it would be better to connect directly to the router via Ethernet as it is faster and doesn't require any configuration; but these instructions will explain how to make the necessary changes for Wi-Fi.
 
-## Changing Address
+## Changing IP Address
+
+If you're not using mDNS, or it's not working, you'll need to be aware of your IP address.
+Since the IP address is dynamically allocated, it'll have to be set to a static IP address so it doesn't unexpectedly change.
+
+The easiest way to do this if you aren't tech-savvy is to connect the Raspberry Pi to a monitor and keyboard to get the desktop experience.
+
+If you'd rather not make the IP address static, you can get the dynamic IP address with `hostname -I` in the terminal.
+If it is different to what your qBittorrent app is configured to use, it will need to be updated in the app.
+Plex will automatically find the server.
+
+But, if you _do_ want to make the IP address static, you can follow [these instructions](https://archive.is/usniZ#using-the-raspberry-pi-os-guide-to-set-a-static-ip-3).
+It includes both instructions for using the command line or the GUI to make the IP address static.
+
+In general, it is also a good idea (but optional) to make the router recognise that the IP address is static, or to create a block of static IP addresses that it cannot accidentally allocate to.
+The method to do this will vary between routers, so you'll need to look up instructions for your router.
+
+One major downside of the static IP address is that if you change your router, the subnet of the local network may change (i.e. your IP addresses might change from `192.168.0.x` to `182.168.1.x`).
+The static IP address will not automatically update, so this will need to be done manually again by following the steps above.
 
 <!-- also talk about setting static IP address -->
