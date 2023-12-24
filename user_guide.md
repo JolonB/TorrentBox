@@ -42,7 +42,6 @@ Plex will automatically detect your server.
 
 <!-- TODO what about qbittorrent and plex config (web UIs) -->
 
-## mDNS not working
 
 ## Changing Drive
 
@@ -70,6 +69,23 @@ Either only one or none of them will work.
 If you've changed your Wi-Fi SSID or password, you may need to update the credentials for the Raspberry Pi so it can reconnect.
 In general, it would be better to connect directly to the router via Ethernet as it is faster and doesn't require any configuration; but these instructions will explain how to make the necessary changes for Wi-Fi.
 
+## Remote Connection to the Pi from Windows
+
+To connect to the Pi remotely from a Windows PC, you will need to first install the OpenSSH Client, as described [here](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse?tabs=gui#install-openssh-for-windows).
+
+You can connect to the Raspberry Pi by opening a Command Prompt or Powershell and typing `ssh pi@media.local` (or replace `media.local` with the known IP address).
+If asked about "the authenticity of host", type `yes`.
+When asked for a password, enter the password for the Raspberry Pi.
+
+You are now connected to the terminal of the Raspberry Pi.
+Be careful not to break anything.
+
+Exit by typing <kbd>Ctrl</kbd>+<kbd>D</kbd>.
+
+## mDNS not working
+
+<!-- TODO this section -->
+
 ## Changing IP Address
 
 If you're not using mDNS, or it's not working, you'll need to be aware of your IP address.
@@ -87,7 +103,5 @@ It includes both instructions for using the command line or the GUI to make the 
 In general, it is also a good idea (but optional) to make the router recognise that the IP address is static, or to create a block of static IP addresses that it cannot accidentally allocate to.
 The method to do this will vary between routers, so you'll need to look up instructions for your router.
 
-One major downside of the static IP address is that if you change your router, the subnet of the local network may change (i.e. your IP addresses might change from `192.168.0.x` to `182.168.1.x`).
+One major downside of the static IP address is that if you change your router, the subnet of the local network may change (i.e. your IP addresses might change from `192.168.0.x` to `192.168.1.x`).
 The static IP address will not automatically update, so this will need to be done manually again by following the steps above.
-
-<!-- also talk about setting static IP address -->
